@@ -1,0 +1,82 @@
+1. wget -q -O - https://pkg.jenkins.io/debian/jenkins-ci.org.key | sudo apt-key add -
+   sudo sh -c 'echo deb http://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'
+   sudo apt-get update
+   sudo apt-get install jenkins
+
+
+2. Step 1: First configure the JDK and Maven path in Manage Jenkins > Global Tool Configuration.
+   Step 2: Download or Enable  Unleash Maven Plugin .
+   Step 3: Create a Job and choose Maven Project Then Ok.
+   Step 4: Choose This project is parameterized and in add parameter choose Choice parameter Enter name of parameter and Description
+		eg name as branch description as branch as parameter add choices as master and feature
+   Step 4: In souce code management clikc on git add the git repo of your java project 
+	eg . https://github.com/shariquemasood/maven.git
+   Step 4: Add pre-Build Step Choose execute shell then enter shell command mvn clean install
+   Step 5: In Build section add ROOT pom address eg /var/lib/jenkins/workspace/maven-job/pom.xml
+   Step 6: Click on Save
+   Step 7: Click build with parameter choose your branch click ok.
+
+3. 1. Check Dockerfile
+   2. Create a Repo over Dockerhub named mavencontainer
+      docker login : enter login credential
+      docker tag bd80f0d57ce1  vsharique/mavencontainer:latest
+      docker push vsharique/mavencontainer:latest
+   3. Inatll the plugin publish over ssh in Manage Jenkins > Manage plugins
+      Now go to Manage Jenkins > Configure System
+      In Publish Over SSH section add the creadential of AWS ec2 instance private key then add name , hostname , username and remote directory
+	click on save.
+      Now create a job in build enviroment click on Send files or execute commands over SSH before the build starts add name and command to
+	execute on ec2 . eg docker run -dt vsharique/mavencontainer
+
+
+
+4. (1).Creat a Jenkins User
+     Step 1: go to the Manage Jenkins
+     Step 2: click on Manage Users
+     Step 3: Click on create user
+     Step 4: Fill the create user form then click on create user button
+   (2). Manage permission to a user
+     Step 1: Download and install the Role Strategy Plugin
+     Step 2: Now go to Manage Jenkins and click on Configure Global Security then mark on Role-Based Strategy and then save it.
+     step 3: Go ot Manage Jenkins and click on Manage and Assign Roles
+     step 4: GO to Manage Roles
+     Step 5: Create a global role named employee and give them read and view credential
+     step 6: Now create a project roles and give all access to that role
+     step 7: In pattern section add the project name you wish to assign a user.
+     step 8: Click on save
+     Step 9: Again go to Manage and Assign role then click on Assign Roles
+     step 10: Add a user and give them employee access
+     step 11: In item roles add user to give access to a perticular job.
+     Step 12: save
+
+5.   Step 1: Go to Manage Jenkins > Manage Nodes
+     Step 2: Create a New node enter name of node to create check permanent agent then ok.
+     Step 3: Add remote root directory  eg /opt/jenkins and add label .NOTE: The directory should be there on Slave server
+     Step 4: In launch Agent choose Launch Agent via Java Web Start click save.
+     Step 5: Go to your slave node and copy text below Run from agent command line: and run it on slave node. Done
+
+8.   Step 1: Install the Github Plugin 
+     Step 2: GO TO Manage Jenkins > Configure System
+     Step 3: In GITHUB section click on Advance button then click on Manage additional Github action then click on convert login and password
+		to tokens. tick  From login and Password enter your github creadential then create token creadential.
+     Step 4: Add Github server choose your recently created token. then save.
+     Step 5: Go to the Job then configure Check GitHub poject add your git project.In build trigger section choose GitHub hook trigger for
+		GITScm polling and save the job.
+     Step 6: Go to your github project repo > settings . Click on webhook then add webhook in payload url enter your jenkins url check Just the
+		push event.  then add webhool button.Done
+
+
+9. 1: Slack Integration
+	Step 1: Add and install Slack Notification Plugin
+	Step 2: Create and account on Slack.com then create a seprate channe for Jenkins-Integration
+        Step 3: Search for an App Jenkins CI on slack . Then click on install select the channel name we have created before.
+		 click Add Jenkins CI integration.
+        Step 4: Copy the Base url and integration token from the webpage.
+        Step 5: GO to Jenkins click on Manage Jenkins then click on Configure System
+        Step 6: Seach for Global Slack Notifier Settings AND add the Base url and Integration token Click on Save.
+	Step 7: For every Project add the Post Build action choose the Slack Notification mark your desire notification click on save.
+    2: Email Integration
+	Step 1: GO to Jenkins click on Manage Jenkins then click on Configure System
+	Step 2: Under Email Notification sector add smtp server for eg smtp.gmail.com click on advanced button
+	Step 3: Tick use smtp authentication add username, password mark use ssl add smtp port for eg 465 click on save.
+	Step 4: For every job add post build action choose email notification add email of receiver who receive notification regarding the job.
