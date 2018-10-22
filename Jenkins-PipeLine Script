@@ -12,6 +12,9 @@ node {
       env.PATH="${env.JAVA_HOME}/bin:${env.PATH}"
 
    }
+   stage('Parameterized'){
+       properties([parameters([choice(choices: ['master', 'feature'], description: 'branch as parameter', name: 'branch')])])
+   }
    stage('Build') {
       // Run the maven build
       if (isUnix()) {
